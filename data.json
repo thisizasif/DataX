@@ -1,0 +1,49 @@
+[
+  {
+    "name": "ASIF NAZIR",
+    "rollNumber": "250020",
+    "phone": "Na",
+    "department": "Computer Applications",
+    "year": 2025,
+    "email": "thisizasif@gmail.com",
+    "address": {
+      "street": "Feripora",
+      "city": "Shopian",
+      "state": "Jammu and Kashmir",
+      "zip": "192303",
+      "age": 21
+    },
+    "courses": [
+      "Applied Computing (Minor)",
+      "Psychology (Multi Disciplinary 1)",
+      "Economics (Multi Disciplinary 2)",
+      "Internet Basics and HTML (Skill Development)",
+      "Environmental Science / Education (Value Added 1)",
+      "Health and Wellness (Value Added 2)",
+      "Communication Skills (Ability Enhancement 1)",
+      "English Language (Ability Enhancement 2)"
+    ],
+    "files": [
+      "Admission Receipt",
+      "OrderId: 449465_ADM25FEE",
+      "PG Transaction ID: 113865012788"
+    ]
+  },
+  {
+    "title": "Admission Record",
+    "author": "University of Kashmir",
+    "year": 2025,
+    "tags": ["Admission", "College", "Computer Applications"],
+    "metadata": {
+      "published": true,
+      "journal": "Official Admission Slip",
+      "volume": null,
+      "issue": null
+    },
+    "files": [
+      "Government Degree College D H Pora",
+      "Program Fee: 12517.00",
+      "Transaction Date: 2025-07-23 19:46:52"
+    ]
+  }
+]

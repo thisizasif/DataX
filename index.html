@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileX - Universal JSON Data Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #2ec4b6;
+            --warning: #ff9f1c;
+            --danger: #e71d36;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-bg: #f0f2f5;
+            --dark-bg: #121212;
+            --light-text: #212529;
+            --dark-text: #f8f9fa;
+            --light-card: #ffffff;
+            --dark-card: #1e1e1e;
+            --light-border: #dee2e6;
+            --dark-border: #444;
+            --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --radius: 12px;
+        }
+
+        .dark-mode {
+            --light-bg: var(--dark-bg);
+            --light-text: var(--dark-text);
+            --light-card: var(--dark-card);
+            --light-border: var(--dark-border);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--light-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .dark-mode header {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .developer {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: var(--light-card);
+            border: 2px solid var(--primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            box-shadow: var(--shadow);
+            border-radius: 50px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            font-size: 1.1rem;
+            background: var(--light-card);
+            color: var(--light-text);
+        }
+
+        .dark-mode #search-input {
+            background: var(--dark-card);
+            color: var(--dark-text);
+        }
+
+        #search-input::placeholder {
+            color: var(--gray);
+        }
+
+        #search-button {
+            padding: 0 28px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        #search-button:hover {
+            opacity: 0.92;
+        }
+
+        #clear-search {
+            padding: 0 20px;
+            background: var(--light-card);
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            border-left: 1px solid var(--light-border);
+        }
+
+        .dark-mode #clear-search {
+            background: var(--dark-card);
+            color: var(--dark-text);
+            border-left: 1px solid var(--dark-border);
+        }
+
+        .search-hints {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .hint {
+            background: var(--light-card);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .hint:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .dark-mode .hint {
+            background: var(--dark-card);
+        }
+
+        .dark-mode .hint:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .results-section {
+            margin-bottom: 40px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .dark-mode .results-count {
+            color: var(--accent);
+        }
+
+        .summary-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: var(--light-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            cursor: pointer;
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
+        }
+
+        .dark-mode .summary-card {
+            background: var(--dark-card);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--dark-border);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .summary-card.selected {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .dark-mode .summary-card.selected {
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+
+        .summary-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .summary-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .dark-mode .summary-title {
+            color: var(--accent);
+        }
+
+        .summary-details {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .summary-highlight {
+            background-color: #ffeb3b;
+            color: black;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .dark-mode .summary-highlight {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .detail-view {
+            display: none;
+        }
+
+        .result-card {
+            background: var(--light-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .result-card {
+            background: var(--dark-card);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--dark-border);
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .dark-mode .card-header {
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .dark-mode .card-title {
+            color: var(--accent);
+        }
+
+        .card-subtitle {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .card-badge {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-field {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .field-name {
+            font-weight: 600;
+            margin-right: 5px;
+            color: var(--primary);
+            min-width: 120px;
+        }
+
+        .dark-mode .field-name {
+            color: var(--accent);
+        }
+
+        .field-value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .field-value ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+
+        .field-value li {
+            margin-bottom: 5px;
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+            color: black;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .dark-mode .highlight {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 60px 40px;
+            color: var(--gray);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .dark-mode .no-results-icon {
+            color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            border-top: 1px solid var(--light-border);
+            color: var(--gray);
+        }
+
+        .dark-mode footer {
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .dark-mode .welcome-icon {
+            color: var(--accent);
+        }
+
+        .nested-field {
+            margin-left: 15px;
+            padding-left: 15px;
+            border-left: 2px solid var(--primary);
+        }
+
+        .dark-mode .nested-field {
+            border-left: 2px solid var(--accent);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: var(--light-card);
+            border: 1px solid var(--light-border);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--gray);
+            box-shadow: var(--shadow);
+        }
+
+        .back-button:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .dark-mode .back-button {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .summary-results {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+                border-radius: var(--radius);
+            }
+
+            #search-input {
+                border-radius: var(--radius) var(--radius) 0 0;
+            }
+
+            #search-button,
+            #clear-search {
+                border-radius: 0 0 var(--radius) var(--radius);
+                padding: 15px;
+            }
+
+            #clear-search {
+                border-left: none;
+                border-top: 1px solid var(--light-border);
+            }
+
+            .dark-mode #clear-search {
+                border-top: 1px solid var(--dark-border);
+            }
+
+            .card-field {
+                flex-direction: column;
+            }
+
+            .field-name {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .search-hints {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-search-location logo-icon"></i>
+                <div>
+                    <h1>FileX</h1>
+                    <div class="developer">by thisizasif</div>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search by any field or keyword...">
+                    <button id="clear-search" aria-label="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button id="search-button">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div class="search-hints">
+                    <div class="hint" data-search="rahul">Try: Rahul</div>
+                    <div class="hint" data-search="310452">Try: 310452</div>
+                    <div class="hint" data-search="data science">Try: Data Science</div>
+                    <div class="hint" data-search="obc">Try: OBC</div>
+                </div>
+            </section>
+
+            <section class="results-section">
+                <div class="results-header">
+                    <div class="results-count" id="results-count">Enter a search term to begin</div>
+                </div>
+
+                <div class="summary-results" id="summary-container">
+                    <div class="welcome-message">
+                        <i class="fas fa-search welcome-icon"></i>
+                        <h2>Welcome to FileX</h2>
+                        <p>Enter a search term above to find matching records from your data</p>
+                        <p>Works with any JSON format - all fields will be displayed</p>
+                    </div>
+                </div>
+
+                <div class="detail-view" id="detail-view">
+                    <button class="back-button" id="back-button">
+                        <i class="fas fa-arrow-left"></i> Back to Results
+                    </button>
+                    <div id="results-container"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2023 FileX Search Portal | Developed by thisizasif</p>
+            <p>Universal JSON data search with dynamic field detection</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM elements
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const clearSearch = document.getElementById('clear-search');
+        const summaryContainer = document.getElementById('summary-container');
+        const resultsContainer = document.getElementById('results-container');
+        const detailView = document.getElementById('detail-view');
+        const backButton = document.getElementById('back-button');
+        const resultsCount = document.getElementById('results-count');
+        const themeToggle = document.getElementById('theme-toggle');
+        const searchHints = document.querySelectorAll('.hint');
+
+        // App state
+        let data = [];
+        let currentTheme = 'light';
+        let searchResults = [];
+
+        // Load data from JSON file
+        async function loadData() {
+            try {
+                // Show loading state
+                summaryContainer.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+
+                // Fetch data from data.json
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.json');
+                }
+                data = await response.json();
+
+                // Show welcome message again after loading
+                showWelcomeMessage();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                resultsCount.textContent = 'Error loading data. Please check if data.json exists.';
+                summaryContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle no-results-icon"></i>
+                        <h2>Data Loading Error</h2>
+                        <p>Could not load data.json file. Please make sure it exists in the same directory.</p>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Show welcome message
+        function showWelcomeMessage() {
+            summaryContainer.innerHTML = `
+                <div class="welcome-message">
+                    <i class="fas fa-search welcome-icon"></i>
+                    <h2>Welcome to FileX</h2>
+                    <p>Enter a search term above to find matching records from your data</p>
+                    <p>Loaded ${data.length} records</p>
+                </div>
+            `;
+            resultsCount.textContent = 'Enter a search term to begin';
+            detailView.style.display = 'none';
+            summaryContainer.style.display = 'grid';
+        }
+
+        // Initialize the app
+        async function init() {
+            // Load theme preference from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                enableDarkMode();
+            }
+
+            await loadData();
+
+            // Set up event listeners
+            setupEventListeners();
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            searchButton.addEventListener('click', performSearch);
+            clearSearch.addEventListener('click', () => {
+                searchInput.value = '';
+                searchInput.focus();
+                showWelcomeMessage();
+            });
+
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            themeToggle.addEventListener('click', toggleTheme);
+
+            searchHints.forEach(hint => {
+                hint.addEventListener('click', () => {
+                    searchInput.value = hint.dataset.search;
+                    performSearch();
+                });
+            });
+
+            backButton.addEventListener('click', () => {
+                detailView.style.display = 'none';
+                summaryContainer.style.display = 'grid';
+            });
+        }
+
+        // Perform search
+        function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            if (searchTerm === '') {
+                showWelcomeMessage();
+                return;
+            }
+
+            // Search across all fields in all records
+            searchResults = data.filter(item => {
+                return searchInObject(item, searchTerm);
+            });
+
+            displaySummaryResults(searchResults, searchTerm);
+        }
+
+        // Recursive function to search in all fields of an object
+        function searchInObject(obj, term) {
+            for (let key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    if (searchInObject(obj[key], term)) {
+                        return true;
+                    }
+                } else if (String(obj[key]).toLowerCase().includes(term)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Display summary results in the UI
+        function displaySummaryResults(results, searchTerm = '') {
+            summaryContainer.innerHTML = '';
+
+            if (results.length === 0) {
+                resultsCount.textContent = 'No results found';
+                summaryContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search no-results-icon"></i>
+                        <h2>No matching records found</h2>
+                        <p>Try a different search term or check the spelling</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsCount.textContent = `Found ${results.length} ${results.length === 1 ? 'record' : 'records'} - Select one to view details`;
+
+            results.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'summary-card';
+                card.dataset.index = index;
+
+                // Create a summary of the most important fields
+                const title = item.Name || item.title || item.id || `Record ${index + 1}`;
+                const subtitle = item.program || item.college || item.university || '';
+                const identifier = item.rollNumber || item.registrationNumber || item.admissionReferenceNumber || '';
+
+                card.innerHTML = `
+                    <div class="summary-title">
+                        <span class="summary-number">${index + 1}</span>
+                        ${highlightSearchTerm(title, searchTerm)}
+                    </div>
+                    <div class="summary-details">
+                        ${subtitle ? `<div>${highlightSearchTerm(subtitle, searchTerm)}</div>` : ''}
+                        ${identifier ? `<div>ID: ${highlightSearchTerm(identifier, searchTerm)}</div>` : ''}
+                    </div>
+                    <div class="summary-details">
+                        Click to view full details
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    // Remove selected class from all cards
+                    document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('selected'));
+                    // Add selected class to clicked card
+                    card.classList.add('selected');
+                    // Show full details
+                    showDetailedView(item, searchTerm);
+                });
+
+                summaryContainer.appendChild(card);
+            });
+        }
+
+        // Show detailed view of a selected record
+        function showDetailedView(item, searchTerm = '') {
+            summaryContainer.style.display = 'none';
+            detailView.style.display = 'block';
+            resultsContainer.innerHTML = '';
+
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            let cardHTML = `<div class="card-content">`;
+
+            // Add title if available
+            if (item.Name) {
+                cardHTML += `
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">${highlightSearchTerm(item.Name, searchTerm)}</h2>
+                            ${item.program ? `<div class="card-subtitle">${highlightSearchTerm(item.program, searchTerm)}</div>` : ''}
+                        </div>
+                        ${item.rollNumber ? `<div class="card-badge">${highlightSearchTerm(item.rollNumber, searchTerm)}</div>` : ''}
+                    </div>
+                `;
+            } else {
+                cardHTML += `
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Record Details</h2>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add all other fields recursively
+            cardHTML += renderObjectFields(item, searchTerm, ['Name', 'program', 'rollNumber']);
+
+            cardHTML += `</div>`;
+            card.innerHTML = cardHTML;
+            resultsContainer.appendChild(card);
+        }
+
+        // Recursively render all object fields
+        function renderObjectFields(obj, searchTerm, excludeFields = [], level = 0) {
+            let html = '';
+
+            for (let key in obj) {
+                // Skip excluded fields
+                if (excludeFields.includes(key)) continue;
+
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    // Handle arrays
+                    if (Array.isArray(obj[key])) {
+                        html += `
+                            <div class="card-field">
+                                <span class="field-name">${formatFieldName(key)}:</span>
+                                <div class="field-value">
+                                    <ul>
+                                        ${obj[key].map(item => `<li>${highlightSearchTerm(String(item), searchTerm)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Handle nested objects
+                        html += `
+                            <div class="card-field">
+                                <span class="field-name">${formatFieldName(key)}:</span>
+                                <div class="field-value">
+                                    <div class="nested-field">
+                                        ${renderObjectFields(obj[key], searchTerm, [], level + 1)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    html += `
+                        <div class="card-field">
+                            <span class="field-name">${formatFieldName(key)}:</span>
+                            <div class="field-value">${highlightSearchTerm(String(obj[key]), searchTerm)}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            return html;
+        }
+
+        // Format field names to be more readable
+        function formatFieldName(fieldName) {
+            return fieldName
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase())
+                .replace(/(Id|Url|Pdf|Json|Xml|Html)/gi, match => match.toUpperCase());
+        }
+
+        // Highlight search term in text
+        function highlightSearchTerm(text, term) {
+            if (!term) return text;
+
+            const regex = new RegExp(`(${term})`, 'gi');
+            return String(text).replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // Toggle between light and dark mode
+        function toggleTheme() {
+            if (currentTheme === 'light') {
+                enableDarkMode();
+            } else {
+                enableLightMode();
+            }
+
+            // Save preference to localStorage
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function enableDarkMode() {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            currentTheme = 'dark';
+        }
+
+        function enableLightMode() {
+            document.body.classList.remove('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            currentTheme = 'light';
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+
+</html>
