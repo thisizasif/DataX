@@ -48,6 +48,7 @@
   },
   {
   "name": "ASIF NAZIR",
+  "institution": "Govt Industrial Training Institute KB Pora Kulgam",
   "rollNumber": "R240801000079",
   "year": 2024,
   "duration": "1 Year",
@@ -55,6 +56,28 @@
   "course": "Computer Operator and Programming Assistant (NSQF)",
   "attempt": 1,
   "result": "Not Declared"
-}
-]
+},
+{
+    "institution": "Govt ITI khuribatpora",
+    "rollNumber": "iTi-Copa-24-25",
+    "iTi Code": "GR01000051",
+    "Session": "2024-2025",
+    "phone": "Na",
+    "department": "Computer Operator and Programming Assistant (NSQF)",
+    "Addmission-year": 2024,
+    "course Duration": "1 Year",
+    "Asif Nazir": {
+      "PRN": "R240801000079",
+      "Trade": "Copa",
+      "Dob": "09-04-2007",
+      "Village": "Feeripora",
+      "District": "Shopian",
+      "State": "Jammu and Kashmir",
+      "Zip": "192303",
+      "Phone": "Na",
+      "Email": "thisizasif@gmail.com",
+      "Remarks": "Pass"
 
+    }
+  }
+]
